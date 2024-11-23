@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const list_medicines = document.getElementById('medicine-table').getElementsByTagName('tbody')[0];
     const create_medicine = document.getElementById('create');
+    const delete_medicine = document.getElementById('delete');
 
     async function fetch_medicines() {
         try {
@@ -38,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
     create_medicine.addEventListener('submit',async(event) =>{
         event.preventDefault();
 
-        const name_medicine = document.getElementById('medicine_name').value;
-        const price_medicine = parseFloat(document.getElementById('medicine_price').value);
+        const name_medicine = document.getElementById('medicine_name_create').value;
+        const price_medicine = parseFloat(document.getElementById('medicine_price_create').value);
 
         if (isNaN(price_medicine) || price_medicine <= 0) {
             alert('Please enter a vaid price which is a number and greater than 0!');
@@ -68,6 +69,43 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Error:', error);
+        
+
+    }});
+
+    delete_medicine.addEventListener('submit',async(event) =>{
+        event.preventDefault();
+        const name_medicine = document.getElementById('medicine_name_delete').value;
+        const medicine = new FormData();
+        medicine.append('name', name_medicine);
+
+                
+        try {
+            const response = await fetch('http://localhost:8000/delete', {
+                method: 'DELETE',
+                body: medicine
+            });
+    
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error("Medicine was NOT deleted successfully!");
+            }else{
+                if (result.message) {
+                    alert(result.message); 
+                } else {
+                    alert('Medicine not found so was not deleted.');
+                }
+            }
+
+
+            await fetch_medicines();
+
+
+                
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to delete medicine. Please try again.');
         
 
     }});
